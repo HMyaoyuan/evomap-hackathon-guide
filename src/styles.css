@@ -153,6 +153,47 @@ h1 {
   align-items: start;
 }
 
+.preflight {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr) auto;
+  gap: 22px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 22px;
+  border: 1px solid #d8cec1;
+  background: #fffaf2;
+  box-shadow: 0 20px 60px rgba(70, 55, 41, 0.09);
+}
+
+.preflight h2 {
+  margin-bottom: 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.08;
+}
+
+.preflight p {
+  margin-bottom: 0;
+  color: #5f5851;
+  line-height: 1.65;
+}
+
+.preflight ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.preflight li {
+  color: #5f5851;
+  line-height: 1.55;
+}
+
+.portal-link {
+  white-space: nowrap;
+}
+
 .panel {
   min-width: 0;
   border: 1px solid #dfd6cb;
@@ -287,6 +328,25 @@ summary {
   color: #514c46;
   font-weight: 800;
   cursor: pointer;
+}
+
+.setup-list {
+  display: grid;
+  gap: 12px;
+  padding-top: 12px;
+  color: #5f5851;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.setup-list p,
+.setup-list ol {
+  margin: 0;
+}
+
+.setup-list a {
+  color: #146256;
+  font-weight: 800;
 }
 
 .note {
@@ -525,6 +585,7 @@ svg {
 
 @media (max-width: 920px) {
   .hero,
+  .preflight,
   .workspace,
   .results,
   .guide-grid,

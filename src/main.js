@@ -14,6 +14,8 @@ import "./styles.css";
 const STORAGE_KEY = "evomap_prompt_enhancer_state";
 const DEFAULT_SCOPE = "recipe:read gene:read reuse:query";
 const DEFAULT_HUB_URL = "https://evomap.ai";
+const DEFAULT_CLIENT_ID = "";
+const DEVELOPER_PORTAL_URL = "https://evomap.ai/dev/portal";
 
 const icons = { CheckCircle2, Copy, ExternalLink, KeyRound, LogIn, RefreshCw, Search, Sparkles, Trash2 };
 
@@ -26,7 +28,7 @@ app.innerHTML = `
       <div class="hero__content">
         <p class="eyebrow">EvoMap Hackathon Demo</p>
         <h1>一句需求，生成可执行 AI Prompt</h1>
-        <p class="lede">用 EvoMap 授权读取 recipe / gene / reuse 图谱，把用户的短需求拼接成结构化长提示词。</p>
+        <p class="lede">主办方先在 EvoMap 注册一个 OAuth app；参赛者授权后，Demo 读取 recipe / gene / reuse 图谱，把短需求拼接成结构化长提示词。</p>
         <nav class="hero-links" aria-label="页面导航">
           <a href="#demo">Demo</a>
           <a href="#guide">开发者引导</a>
@@ -35,6 +37,23 @@ app.innerHTML = `
         </nav>
       </div>
       <div class="status" id="statusCard"></div>
+    </section>
+
+    <section class="preflight">
+      <div>
+        <p class="eyebrow">Before Running</p>
+        <h2>这个 Demo 需要一个你注册好的 EvoMap 应用</h2>
+        <p>我不会替你生成真实生产应用。请先到 EvoMap 开发者门户注册 OAuth app，把下面两个 redirect URI 加进去，然后把拿到的 <code>client_id</code> 填到左侧连接区，或写进代码里的 <code>DEFAULT_CLIENT_ID</code>。</p>
+      </div>
+      <ul>
+        <li><strong>本地调试：</strong><code>http://127.0.0.1:5173/</code></li>
+        <li><strong>线上展示：</strong><code>https://hmyaoyuan.github.io/evomap-hackathon-guide/</code></li>
+        <li><strong>推荐 scopes：</strong><code>recipe:read gene:read reuse:query</code></li>
+      </ul>
+      <a class="button primary portal-link" href="${DEVELOPER_PORTAL_URL}" target="_blank" rel="noreferrer">
+        <i data-icon="ExternalLink"></i>
+        去开发者门户注册
+      </a>
     </section>
 
     <section class="workspace" id="demo">
@@ -58,19 +77,39 @@ app.innerHTML = `
 
         <label>
           <span>Client ID</span>
-          <input id="clientId" value="${escapeHtml(state.clientId)}" placeholder="可动态注册，也可粘贴已注册 app 的 client_id" autocomplete="off" />
+          <input id="clientId" value="${escapeHtml(state.clientId)}" placeholder="填入你在 EvoMap 开发者门户注册得到的 client_id" autocomplete="off" />
         </label>
 
         <div class="button-row">
-          <button class="button secondary" id="registerBtn">
-            <i data-icon="KeyRound"></i>
-            动态注册
-          </button>
           <button class="button primary" id="loginBtn">
             <i data-icon="LogIn"></i>
             EvoMap 授权
           </button>
         </div>
+
+        <details>
+          <summary>没有 client_id？先看这里</summary>
+          <div class="setup-list">
+            <p>主办方或项目负责人需要先注册 app。注册时至少填写：</p>
+            <ol>
+              <li>应用名称：EvoMap Prompt Enhancer Demo</li>
+              <li>Redirect URI：本地和线上两个地址</li>
+              <li>Scopes：recipe:read gene:read reuse:query</li>
+            </ol>
+            <a href="${DEVELOPER_PORTAL_URL}" target="_blank" rel="noreferrer">打开 EvoMap 开发者门户</a>
+          </div>
+        </details>
+
+        <details>
+          <summary>临时只读动态注册</summary>
+          <div class="setup-list">
+            <p>仅用于现场排障或快速试读接口。正式演示建议使用你自己注册、可控、可说明来源的 OAuth app。</p>
+            <button class="button secondary full" id="registerBtn">
+              <i data-icon="KeyRound"></i>
+              临时动态注册只读 client
+            </button>
+          </div>
+        </details>
 
         <details>
           <summary>已有 access token</summary>
@@ -85,7 +124,7 @@ app.innerHTML = `
         </details>
 
         <div class="note">
-          动态注册只申请只读权限。要启用完整 OIDC「用 EvoMap 登录」，请在开发者门户注册 app 后填入 client_id，并把 scope 加上 openid profile email。
+          正式材料里必须说明这个 client_id 从哪里来、是谁注册的、允许哪些 redirect URI。要启用完整 OIDC「用 EvoMap 登录」，请把 scope 加上 openid profile email。
         </div>
       </aside>
 
@@ -147,7 +186,8 @@ app.innerHTML = `
           <span>01</span>
           <h3>最短上手路径</h3>
           <ol>
-            <li>创建 OAuth app，拿到 client_id，配置本地 redirect URI。</li>
+            <li>主办方/参赛团队先在 EvoMap 开发者门户创建 OAuth app。</li>
+            <li>配置 redirect URI，拿到 client_id，并记录申请的 scopes。</li>
             <li>发起 OAuth2 + PKCE 授权，请求最小 scope。</li>
             <li>用 code 换 access token。</li>
             <li>调用 /developer/oauth/recipes、/genes、/reuse。</li>
@@ -157,8 +197,8 @@ app.innerHTML = `
 
         <article class="guide-card">
           <span>02</span>
-          <h3>推荐先做只读 Demo</h3>
-          <p>优先申请 recipe:read、gene:read、reuse:query。读通以后再考虑 recipe:write、recipe:publish、webhook 和 test 沙箱。</p>
+          <h3>注册时填什么</h3>
+          <p>应用名、redirect URI、最小 scopes、联系人/说明。前端 PKCE public client 不应保存 client_secret。</p>
         </article>
 
         <article class="guide-card">
@@ -230,7 +270,7 @@ function loadState() {
   const fallback = {
     hubUrl: DEFAULT_HUB_URL,
     scope: DEFAULT_SCOPE,
-    clientId: "",
+    clientId: DEFAULT_CLIENT_ID,
     accessToken: "",
     tokenScope: "",
     user: null,
