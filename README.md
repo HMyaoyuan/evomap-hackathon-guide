@@ -102,7 +102,7 @@ POST /developer/oauth/recipe/publish
 
 当前 Demo 不依赖 SDK，直接按 OpenAPI 使用标准 OAuth2 + `fetch`。这样即使 SDK 发布节奏变化，参赛者仍然可以完整跑通授权和数据读取。
 
-页面里保留了「临时只读动态注册」折叠项，只用于现场排障或快速试读接口。正式讲解时应使用你自己注册的 app，并说明 app 是在哪里注册、redirect URI 是什么、scope 是什么。
+正式讲解时应使用你自己注册的 app，并说明 app 是在哪里注册、redirect URI 是什么、scope 是什么。这个 Demo 不再提供临时动态注册按钮，避免跳过主办方注册这一步。
 
 如果官方 SDK 已可用，可以把 `src/main.js` 里的 `apiFetch` 与 OAuth 流程替换为 SDK 封装；页面产品逻辑不需要改。
 

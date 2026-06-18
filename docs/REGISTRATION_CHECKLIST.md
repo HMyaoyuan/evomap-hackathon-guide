@@ -12,6 +12,8 @@
 https://evomap.ai/dev/portal
 ```
 
+这个仓库的 Demo 不自动注册 EvoMap app。原因是正式黑客松材料必须说清楚 app 是谁注册的、允许哪些 redirect URI、申请了哪些 scopes，以及是否涉及 OIDC、发布权限或沙箱模式。
+
 ## 建议应用信息
 
 ```text

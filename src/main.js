@@ -2,7 +2,6 @@ import {
   CheckCircle2,
   Copy,
   ExternalLink,
-  KeyRound,
   LogIn,
   RefreshCw,
   Search,
@@ -17,7 +16,7 @@ const DEFAULT_HUB_URL = "https://evomap.ai";
 const DEFAULT_CLIENT_ID = "";
 const DEVELOPER_PORTAL_URL = "https://evomap.ai/dev/portal";
 
-const icons = { CheckCircle2, Copy, ExternalLink, KeyRound, LogIn, RefreshCw, Search, Sparkles, Trash2 };
+const icons = { CheckCircle2, Copy, ExternalLink, LogIn, RefreshCw, Search, Sparkles, Trash2 };
 
 const state = loadState();
 
@@ -97,17 +96,6 @@ app.innerHTML = `
               <li>Scopes：recipe:read gene:read reuse:query</li>
             </ol>
             <a href="${DEVELOPER_PORTAL_URL}" target="_blank" rel="noreferrer">打开 EvoMap 开发者门户</a>
-          </div>
-        </details>
-
-        <details>
-          <summary>临时只读动态注册</summary>
-          <div class="setup-list">
-            <p>仅用于现场排障或快速试读接口。正式演示建议使用你自己注册、可控、可说明来源的 OAuth app。</p>
-            <button class="button secondary full" id="registerBtn">
-              <i data-icon="KeyRound"></i>
-              临时动态注册只读 client
-            </button>
           </div>
         </details>
 
@@ -305,7 +293,6 @@ function bindEvents() {
     });
   }
 
-  document.querySelector("#registerBtn").addEventListener("click", registerClient);
   document.querySelector("#loginBtn").addEventListener("click", startOAuth);
   document.querySelector("#useTokenBtn").addEventListener("click", useManualToken);
   document.querySelector("#resetBtn").addEventListener("click", resetLocalState);
@@ -317,41 +304,13 @@ function bindEvents() {
   document.querySelector("#copyRefsBtn").addEventListener("click", () => copyText(JSON.stringify(state.lastReferences || {}, null, 2)));
 }
 
-async function registerClient() {
-  const hubUrl = currentHubUrl();
-  const scope = document.querySelector("#scope").value.trim() || DEFAULT_SCOPE;
-  const redirectUri = redirectUriForThisPage();
-
-  setStatusMessage("正在动态注册只读 Demo App...");
-  try {
-    const response = await fetch(`${hubUrl}/oauth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client_name: "EvoMap Prompt Enhancer Demo",
-        redirect_uris: [redirectUri],
-        scope
-      })
-    });
-    const data = await readJson(response);
-    if (!response.ok) throw new Error(data.error_description || data.error || `HTTP ${response.status}`);
-
-    document.querySelector("#clientId").value = data.client_id;
-    saveState({ hubUrl, scope: data.scope || scope, clientId: data.client_id });
-    renderStatus();
-    setStatusMessage("动态注册成功，可以发起 EvoMap 授权。");
-  } catch (error) {
-    setStatusMessage(`动态注册失败：${error.message}`);
-  }
-}
-
 async function startOAuth() {
   const hubUrl = currentHubUrl();
   const scope = document.querySelector("#scope").value.trim() || DEFAULT_SCOPE;
   const clientId = document.querySelector("#clientId").value.trim();
 
   if (!clientId) {
-    setStatusMessage("请先动态注册，或填入开发者门户里的 client_id。");
+    setStatusMessage("请先在 EvoMap 开发者门户注册 app，并填入 client_id。");
     return;
   }
 
@@ -587,7 +546,6 @@ function setStatusMessage(message) {
 
 function setBusy(isBusy) {
   document.querySelector("#generateBtn").disabled = isBusy;
-  document.querySelector("#registerBtn").disabled = isBusy;
   document.querySelector("#loginBtn").disabled = isBusy;
 }
 
